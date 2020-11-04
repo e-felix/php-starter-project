@@ -1,0 +1,16 @@
+version: "3.8"
+services:
+    server:
+        build:
+            context: .
+            dockerfile: ./provisioning/dev/Dockerfile-server
+            args:
+                PROJECT_NAME: php-project-starter
+                PUBLIC_DIR: public/
+        image: php-project-starter
+        ports:
+            - "127.0.0.1:8080:8000"
+        restart: always
+        volumes:
+            - .:/var/opt/php-project-starter
+        user: "dev:dev"

@@ -1,0 +1,50 @@
+FROM ubuntu:18.04
+
+ARG PROJECT_NAME
+ARG PUBLIC_DIR
+
+ENV DEBIAN_FRONTEND=noninteractive
+ENV PUBLIC_DIR=${PUBLIC_DIR}
+ENV SUDOERS /etc/sudoers
+ENV DEV_USER dev
+
+RUN apt-get update && apt-get upgrade -y
+
+RUN apt-get -y install software-properties-common && \
+    add-apt-repository ppa:ondrej/php
+
+RUN apt-get update && apt-get install -y php7.4 \
+    php7.4-curl \
+    php7.4-fpm \
+    curl \
+    git \
+    bash \
+    nano \
+    wget \
+    sudo
+
+RUN wget -O /usr/bin/composer https://getcomposer.org/composer-stable.phar
+
+RUN chmod +x /usr/bin/composer
+
+RUN useradd \
+    --shell /bin/bash \
+    --create-home --base-dir /home \
+    --user-group \
+    --groups sudo,ssh \
+    --password '' \
+    ${DEV_USER}
+
+RUN chmod u+w ${SUDOERS} && \
+    echo '${DEV_USER}   ALL=(ALL:ALL) NOPASSWD: ALL' >> ${SUDOERS} && \
+    chmod u-w ${SUDOERS}
+
+WORKDIR /var/opt/$PROJECT_NAME
+
+COPY . .
+
+RUN wget -O /usr/bin/phpunit https://phar.phpunit.de/phpunit-9.phar
+
+RUN chmod +x /usr/bin/phpunit
+
+CMD php -S 0.0.0.0:8000 -t ${PUBLIC_DIR}
