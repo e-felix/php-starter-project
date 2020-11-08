@@ -1,4 +1,4 @@
-# TINY ADSERVER
+# PHP STARTER PROJECT
 
 > A PHP 7.4 environment to start a project
 
